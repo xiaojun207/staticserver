@@ -28,7 +28,7 @@
 
 	//手工配置服务和路由
 	s := &http.Server{
-		Addr:           ":8080",
+		Addr:           ":9090",
 		Handler:        myHandler,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
@@ -70,7 +70,7 @@
 
 	//Manually configure the service and routing
 	s := &http.Server{
-		Addr:           ":8080",
+		Addr:           ":9090",
 		Handler:        myHandler,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,

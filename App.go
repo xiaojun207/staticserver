@@ -24,7 +24,7 @@ const (
 
 func main() {
 	server := http.Server{
-		Addr:        ":8080",
+		Addr:        ":9090",
 		Handler:     &Myhandler{},
 		ReadTimeout: 10 * time.Second,
 	}
