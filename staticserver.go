@@ -7,8 +7,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"regexp"
-	"strconv"
 	"time"
 )
 
@@ -26,12 +24,13 @@ const (
 
 func main() {
 	server := http.Server{
-		Addr:        ":9090",
+		Addr:        ":8080",
 		Handler:     &Myhandler{},
 		ReadTimeout: 10 * time.Second,
 	}
 	mux = make(map[string]func(http.ResponseWriter, *http.Request))
 	mux["/"] = index
+	mux["/clear"] = clear
 	mux["/upload"] = upload
 	mux["/file"] = StaticServer
 	server.ListenAndServe()
@@ -42,18 +41,13 @@ func (*Myhandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		h(w, r)
 		return
 	}
-	if ok, _ := regexp.MatchString("/css/", r.URL.String()); ok {
-		http.StripPrefix("/css/", http.FileServer(http.Dir("./css/"))).ServeHTTP(w, r)
-	} else {
-		http.StripPrefix("/", http.FileServer(http.Dir("./upload/"))).ServeHTTP(w, r)
-	}
-
+	http.StripPrefix("/", http.FileServer(http.Dir("./upload/"))).ServeHTTP(w, r)
 }
 
 func upload(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "GET" {
-		t, _ := template.ParseFiles(Template_Dir + "file.html")
+		t, _ := template.ParseFiles(Template_Dir + "index.html")
 		t.Execute(w, "上传文件")
 	} else {
 		r.ParseMultipartForm(32 << 20)
@@ -67,16 +61,30 @@ func upload(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, "%v", "不允许的上传类型")
 			return
 		}
-		filename := strconv.FormatInt(time.Now().Unix(), 10) + fileext
-		f, _ := os.OpenFile(Upload_Dir+filename, os.O_CREATE|os.O_WRONLY, 0660)
+		fmt.Println(handler.Filename)
+		// strconv.FormatInt(time.Now().Unix(), 10) + "." +
+		urifilename := handler.Filename
+		f, err := os.OpenFile(Upload_Dir+urifilename, os.O_CREATE|os.O_WRONLY, 0660)
+		if err != nil {
+			fmt.Println(err)
+			fmt.Fprintf(w, "%v", "文件创建错误")
+			return
+		}
 		_, err = io.Copy(f, file)
 		if err != nil {
+			fmt.Println(err)
 			fmt.Fprintf(w, "%v", "上传失败")
 			return
 		}
-		filedir, _ := filepath.Abs(Upload_Dir + filename)
-		fmt.Fprintf(w, "%v", filename+"上传完成,服务器地址:"+filedir)
+		//filedir, _ := filepath.Abs(Upload_Dir + filename)
+		fmt.Fprintf(w, "%v", "上传完成,服务器地址:"+urifilename)
 	}
+}
+
+func clear(w http.ResponseWriter, r *http.Request) {
+	os.RemoveAll(Upload_Dir)
+	os.Mkdir(Upload_Dir, os.ModePerm)
+	fmt.Fprintf(w, "%v", "清理成功")
 }
 
 func index(w http.ResponseWriter, r *http.Request) {

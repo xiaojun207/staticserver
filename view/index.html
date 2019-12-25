@@ -4,11 +4,36 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 	<title>{{.Title}}</title>
+	<style>
+		form{
+			padding: 10px;
+			line-height: 40px;
+		}
+		a {
+			color: red;
+			line-height: 40px;
+		}
+
+		div{
+			margin: 10px;
+		}
+	</style>
 </head>
 <body>
 	<div>
-		<a href="/upload">上传文件</a></p>
 		<a href="/file">查看文件</a></p>
+		<a href="/clear">清理文件</a></p>
+	</div>
+
+	<div style="background: #e2ebf3;border: 1px solid currentColor;">
+		<form enctype="multipart/form-data" action="/upload" method="post">
+			<div>
+				<label>文件：</label><input type="file" id="uploadfile" name="uploadfile" />
+			</div>
+			<div>
+				<input type="submit" value="upload" />
+			</div>
+		</form>
 	</div>
 </body>
 </html>
