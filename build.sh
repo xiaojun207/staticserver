@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#  sh /Users/kdaxrobot/Library/Preferences/GoLand2019.1/scratches/build.sh okex-future
+#  sh /Users/$USER/Library/Preferences/GoLand2019.1/scratches/build.sh fileserver
 
 cd $(pwd)
 
@@ -12,4 +12,4 @@ upx $appname
 
 workdir=$(cd $(dirname $0); pwd)
 
-sh /Users/kdaxrobot/Library/Preferences/GoLand2019.1/scratches/send.sh $appname $workdir
+sh /Users/$USER/Library/Preferences/GoLand2019.1/scratches/send.sh $appname $workdir
